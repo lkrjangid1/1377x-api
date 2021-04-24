@@ -2,18 +2,10 @@ import requests
 from bs4 import BeautifulSoup
 from re import search
 from flask import Flask ,jsonify
-import json
-import os
-import concurrent.futures
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
-product_name = []
-product_url = []
-product_icon = []
-product_plateform = []
-product_size = []
 
 def filecrSearch(title):
     for i in range(1,40):
@@ -24,13 +16,18 @@ def filecrSearch(title):
         r = requests.get(url, headers=header)
         soup = BeautifulSoup(r.content,features='lxml')
         articals = soup.find_all('div', class_ ='product')
-
+        product_name = []
+        product_url = []
+        product_icon = []
+        product_plateform = []
+        product_size = []
         for item in articals:
             product_name.append(item.find('a', class_ = 'product-title'))
             product_url.append(item.find('a', class_ = 'product-icon')['href'])
             product_size.append(item.find('div', class_='side-border product-size').text)
             product_plateform.append(item.find('span', class_='text').text)
             product_icon.append(item.find('img')['src'])
+        return product_name,product_icon,product_plateform,product_size,product_url
             
 
 @app.route('/')
@@ -39,7 +36,8 @@ def home_page():
 
 @app.route('/<query>')
 def home(query):
-    filecrSearch(query)
+    
+    product_name,product_icon,product_plateform,product_size,product_url = filecrSearch(query)
 
     return jsonify([{'Name':product_name[index],
     'size':product_size[index],
@@ -48,6 +46,16 @@ def home(query):
     'plateform':product_plateform[index],
     } 
     for index in range(len(product_name))])
+
+
+
+
+
+
+
+
+
+
 
 
 
