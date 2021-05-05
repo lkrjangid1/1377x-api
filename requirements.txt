@@ -6,4 +6,4 @@ lxml
 json
 os
 re
-concurrent
+concurrent.futures
